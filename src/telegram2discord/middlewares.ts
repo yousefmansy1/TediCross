@@ -547,7 +547,7 @@ async function addPreparedObj(ctx: TediCrossContext, next: () => void) {
 			}
 
 			// Get the name of the sender of this message
-			const senderName = makeDisplayName(ctx.TediCross.settings.telegram.useFirstNameInsteadOfUsername, tc.from);
+			const senderName = makeDisplayName(ctx.TediCross.settings.telegram.useFullNameInsteadOfUsername, tc.from);
 
 			// Make the header
 			// WARNING! Butt-ugly code! If you see a nice way to clean this up, please do it
@@ -555,24 +555,24 @@ async function addPreparedObj(ctx: TediCrossContext, next: () => void) {
 				// Get the name of the original sender, if this is a forward
 				const originalSender = R.isNil(tc.forwardFrom)
 					? null
-					: makeDisplayName(ctx.TediCross.settings.telegram.useFirstNameInsteadOfUsername, tc.forwardFrom);
+					: makeDisplayName(ctx.TediCross.settings.telegram.useFullNameInsteadOfUsername, tc.forwardFrom);
 				// Get the name of the replied-to user, if this is a reply
 				const repliedToName = R.isNil(tc.replyTo)
 					? null
 					: await R.ifElse(
-						R.prop("isReplyToTediCross") as any,
-						R.compose(
-							(username: string) => makeDiscordMention(username, ctx.TediCross.dcBot, bridge),
-							R.prop("dcUsername") as any
-						),
-						R.compose(
-							R.partial(makeDisplayName, [
-								ctx.TediCross.settings.telegram.useFirstNameInsteadOfUsername
-							]),
-							//@ts-ignore
-							R.prop("originalFrom")
-						)
-					)(tc.replyTo);
+							R.prop("isReplyToTediCross") as any,
+							R.compose(
+								(username: string) => makeDiscordMention(username, ctx.TediCross.dcBot, bridge),
+								R.prop("dcUsername") as any
+							),
+							R.compose(
+								R.partial(makeDisplayName, [
+									ctx.TediCross.settings.telegram.useFullNameInsteadOfUsername
+								]),
+								//@ts-ignore
+								R.prop("originalFrom")
+							)
+					  )(tc.replyTo);
 				// Build the header
 				let header = "";
 				if (bridge.telegram.sendUsernames) {
